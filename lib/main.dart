@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yaniv_calculator/party.dart';
-import 'fileHandler.dart';
-import 'modalNewRound.dart';
+import 'package:yaniv_calculator/file_handler.dart';
+import 'package:yaniv_calculator/modal_new_round.dart';
 
 var uuid = const Uuid();
 
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime actualDate = DateTime.now();
   Party actualParty = Party(
     id: uuid.v4(),
-    players: [],
+    players: ['alex'],
     rounds: [],
   );
 

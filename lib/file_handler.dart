@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yaniv_calculator/party.dart';
 
 class FileHandler {
@@ -9,46 +8,34 @@ class FileHandler {
   // instance of this object for the whole application
   FileHandler._privateConstructor();
   static final FileHandler instance = FileHandler._privateConstructor();
-  static File? _file;
-
-  static const _fileName = 'user_file.txt';
+  static SharedPreferences? _sharedPreference;
 
   // Get the data file
-  Future<File> get file async {
-    if (_file != null) return _file!;
+  Future<SharedPreferences> get file async {
+    if (_sharedPreference != null) return _sharedPreference!;
 
-    _file = await _initFile();
-    return _file!;
-  }
-
-  // Inititalize file
-  Future<File> _initFile() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = directory.path;
-
-    return !File('$path/$_fileName').existsSync()
-        ? await File('$path/$_fileName').create(recursive: true)
-        : File('$path/$_fileName');
+    _sharedPreference = await SharedPreferences.getInstance();
+    return _sharedPreference!;
   }
 
   static final Set<Party> _partySet = {};
 
   Future<void> writeParty(Party party) async {
-    final File fl = await file;
+    final SharedPreferences preference = await file;
     _partySet.add(party);
 
     // Now convert the set to a list as the jsonEncoder cannot encode
     // a set but a list.
     final partyListMap = _partySet.map((e) => e.toJson()).toList();
 
-    await fl.writeAsString(jsonEncode(partyListMap));
+    await preference.setString('parties', jsonEncode(partyListMap));
   }
 
   Future<List<Party>> readParty() async {
-    final File fl = await file;
-    final content = await fl.readAsString();
+    final SharedPreferences preference = await file;
+    final content = preference.getString('parties');
 
-    if (content.isEmpty) {
+    if (content == null || content.isEmpty) {
       return [];
     }
 
@@ -60,12 +47,12 @@ class FileHandler {
   }
 
   Future<void> deleteParty(Party party) async {
-    final File fl = await file;
+    final SharedPreferences preference = await file;
 
     _partySet.removeWhere((e) => e == party);
     final partyListMap = _partySet.map((e) => e.toJson()).toList();
 
-    await fl.writeAsString(jsonEncode(partyListMap));
+    await preference.setString('parties', jsonEncode(partyListMap));
   }
 
   Future<void> updateParty({
