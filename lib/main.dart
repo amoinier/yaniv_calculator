@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:yaniv_calculator/file_handler.dart';
 import 'package:yaniv_calculator/game.dart';
+import 'package:yaniv_calculator/party.dart';
+import 'package:yaniv_calculator/set_player.dart';
 
 var uuid = const Uuid();
 
@@ -21,13 +24,15 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
       // home: const Game(title: 'Yaniv Calculator'),
-      home: const MenuScreen(),
+      home: MenuScreen(),
     );
   }
 }
 
 class MenuScreen extends StatelessWidget {
-  const MenuScreen({super.key});
+  MenuScreen({super.key});
+
+  final file = FileHandler.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -40,26 +45,33 @@ class MenuScreen extends StatelessWidget {
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Game(
-                    title: 'Yaniv Calculator',
-                    newGame: true,
-                  ),
+                  builder: (context) => const SetPlayer(),
                 ),
               ),
               child: const Text('New Game'),
             ),
-            CupertinoButton(
-              color: Colors.black,
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Game(
-                    title: 'Yaniv Calculator',
-                    newGame: false,
+            FutureBuilder<List<Party>>(
+              future: file.readParty(),
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<Party>> snapshot) {
+                if (snapshot.data!.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+
+                return CupertinoButton(
+                  color: Colors.black,
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Game(
+                        title: 'Yaniv Calculator',
+                        newGame: false,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              child: const Text('Replay last game'),
+                  child: const Text('Replay last game'),
+                );
+              },
             )
           ],
         ),
