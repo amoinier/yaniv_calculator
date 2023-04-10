@@ -44,6 +44,9 @@ class _SetPlayerState extends State<SetPlayer> {
                       },
                     ),
                   ),
+                  const SizedBox(
+                    width: 20,
+                  ),
                   CupertinoButton(
                     color: Colors.black,
                     onPressed: () {
@@ -59,7 +62,7 @@ class _SetPlayerState extends State<SetPlayer> {
                         },
                       );
                     },
-                    child: const Text('test'),
+                    child: const Text('Add'),
                   )
                 ],
               ),
@@ -73,8 +76,7 @@ class _SetPlayerState extends State<SetPlayer> {
             context,
             MaterialPageRoute(
               builder: (context) => Game(
-                title: 'Yaniv Calculator',
-                newGame: true,
+                selectedParty: null,
                 playersNames: players,
               ),
             ),

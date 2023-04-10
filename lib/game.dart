@@ -12,24 +12,22 @@ const uuid = Uuid();
 class Game extends StatefulWidget {
   const Game({
     super.key,
-    required this.title,
-    required this.newGame,
+    required this.selectedParty,
     this.playersNames = const [],
   });
 
-  final String title;
-  final bool newGame;
+  final Party? selectedParty;
   final List<String> playersNames;
 
   @override
-  State<Game> createState() => _GameState(newGame, playersNames);
+  State<Game> createState() => _GameState(selectedParty, playersNames);
 }
 
 class _GameState extends State<Game> {
-  final bool newGame;
+  final Party? selectedParty;
   final List<String> playersNames;
 
-  _GameState(this.newGame, this.playersNames);
+  _GameState(this.selectedParty, this.playersNames);
 
   DateTime startDate = DateTime.now();
   DateTime actualDate = DateTime.now();
@@ -39,9 +37,9 @@ class _GameState extends State<Game> {
     final file = FileHandler.instance;
     final parties = await file.readParty();
 
-    if (parties.isNotEmpty && !newGame) {
+    if (selectedParty != null) {
       setState(() {
-        actualParty = parties[0];
+        actualParty = selectedParty!;
       });
     }
   }
@@ -77,6 +75,7 @@ class _GameState extends State<Game> {
       id: uuid.v4(),
       players: playersNames,
       rounds: [],
+      creationDate: DateTime.now().toString(),
     );
     _initParty();
   }
@@ -92,9 +91,9 @@ class _GameState extends State<Game> {
     return actualParty.id.isNotEmpty
         ? Scaffold(
             appBar: AppBar(
-              title: Text(
-                (actualDate.difference(startDate)).toString(),
-                style: const TextStyle(color: Color(0xDDFFFFFF)),
+              title: const Text(
+                'Yaniv Calculator',
+                style: TextStyle(color: Color(0xDDFFFFFF)),
               ),
               backgroundColor: const Color.fromARGB(149, 241, 10, 10),
               leading: IconButton(

@@ -49,7 +49,7 @@ class FileHandler {
   Future<void> deleteParty(Party party) async {
     final SharedPreferences preference = await file;
 
-    _partySet.removeWhere((e) => e == party);
+    _partySet.removeWhere((e) => e.id == party.id);
     final partyListMap = _partySet.map((e) => e.toJson()).toList();
 
     await preference.setString('parties', jsonEncode(partyListMap));
