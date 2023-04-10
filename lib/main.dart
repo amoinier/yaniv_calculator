@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yaniv_calculator/file_handler.dart';
 import 'package:yaniv_calculator/list_parties.dart';
@@ -22,26 +21,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       themeMode: ThemeMode.system,
-      theme: ThemeData(
-        primaryColor: Colors.white,
-        brightness: Brightness.light,
-        primaryColorDark: Colors.black,
-        canvasColor: Colors.white,
-        // next line is important!
-        appBarTheme:
-            const AppBarTheme(systemOverlayStyle: SystemUiOverlayStyle.dark),
-      ),
-      darkTheme: ThemeData(
-        primaryColor: Colors.black,
-        primaryColorLight: Colors.black,
-        brightness: Brightness.dark,
-        primaryColorDark: Colors.black,
-        indicatorColor: Colors.white,
-        canvasColor: Colors.black,
-        // next line is important!
-        appBarTheme:
-            const AppBarTheme(systemOverlayStyle: SystemUiOverlayStyle.light),
-      ),
+      theme: ThemeData(primaryColor: Colors.white),
+      darkTheme: ThemeData.dark(),
       home: MenuScreen(),
     );
   }
@@ -55,6 +36,14 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Yaniv Calculator',
+          style: TextStyle(color: Color(0xDDFFFFFF)),
+        ),
+        leading: null,
+        automaticallyImplyLeading: false,
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

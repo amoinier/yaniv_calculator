@@ -34,8 +34,10 @@ class Yaniv {
                   ),
                   ...players.asMap().entries.map(
                         (entry) => Expanded(
-                          child: CupertinoTextField(
-                            prefix: Text(players[entry.key]),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              label: Text(players[entry.key]),
+                            ),
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: false, // here it goes
                               signed: false,
@@ -61,7 +63,7 @@ class Yaniv {
                       CupertinoButton(
                         color: Colors.black,
                         onPressed: () => Navigator.pop(context, newScore),
-                        child: const Text('test'),
+                        child: const Text('Submit'),
                       )
                     ],
                   )

@@ -97,7 +97,7 @@ class _GameState extends State<Game> {
               ),
               backgroundColor: const Color.fromARGB(149, 241, 10, 10),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(

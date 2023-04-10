@@ -10,9 +10,14 @@ class ListParties extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: ListView(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Yaniv Calculator',
+          style: TextStyle(color: Color(0xDDFFFFFF)),
+        ),
+      ),
+      body: ListView(
         padding: const EdgeInsets.all(8),
         children: [
           ...parties.asMap().entries.map(

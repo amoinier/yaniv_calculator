@@ -18,6 +18,12 @@ class _SetPlayerState extends State<SetPlayer> {
     var controller = TextEditingController();
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Yaniv Calculator',
+          style: TextStyle(color: Color(0xDDFFFFFF)),
+        ),
+      ),
       body: Center(
         child: Column(
           children: [
