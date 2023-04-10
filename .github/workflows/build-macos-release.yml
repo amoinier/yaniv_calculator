@@ -19,7 +19,7 @@ jobs:
         with:
           type: 'zip'
           filename: yaniv_calculator-${{github.ref_name}}-macos.zip
-          directory: build/macos/Build/Products/Release
+          directory: build/macos/Build/Products/Release/yaniv_calculator.app
       - name: macOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
