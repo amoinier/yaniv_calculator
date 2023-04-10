@@ -1,22 +1,44 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yaniv_calculator/game.dart';
 
 class SetPlayer extends StatefulWidget {
-  const SetPlayer({super.key});
+  const SetPlayer({Key? key}) : super(key: key);
 
   @override
   State<SetPlayer> createState() => _SetPlayerState();
 }
 
 class _SetPlayerState extends State<SetPlayer> {
-  List<String> players = [];
-  String newPlayer = '';
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode inputFocus = FocusNode();
+  final List<String> _players = [];
+  String _newPlayer = '';
+
+  void _onChangedPlayerName(String value) {
+    if (value.isEmpty) {
+      return;
+    }
+    _newPlayer = value;
+  }
+
+  void _onSubmitPlayerName() {
+    if (_newPlayer.isEmpty) {
+      return;
+    }
+    _controller.clear();
+    inputFocus.requestFocus();
+    setState(() {
+      _players.add(_newPlayer);
+      _newPlayer = '';
+    });
+  }
+
+  void _onPressEnter(String value) {
+    _onSubmitPlayerName();
+  }
 
   @override
   Widget build(BuildContext context) {
-    var controller = TextEditingController();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -24,57 +46,70 @@ class _SetPlayerState extends State<SetPlayer> {
           style: TextStyle(color: Color(0xDDFFFFFF)),
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            ...players.asMap().entries.map(
-                  (entry) => Text(entry.value),
-                ),
-            Container(
-              constraints: const BoxConstraints(maxHeight: 350, maxWidth: 350),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter a new player name',
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _players.length,
+              itemBuilder: (context, index) {
+                final player = _players[index];
+                return Dismissible(
+                  key: Key(player),
+                  onDismissed: (DismissDirection direction) {
+                    setState(() {
+                      _players.removeWhere(
+                          (playerFromList) => playerFromList == player);
+                    });
+                  },
+                  background: Container(color: Colors.red),
+                  child: Container(
+                    height: 50,
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Color.fromARGB(255, 227, 227, 227),
+                        ),
                       ),
-                      onChanged: (value) {
-                        if (value.isEmpty) {
-                          return;
-                        }
-
-                        newPlayer = value;
-                      },
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(player),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  CupertinoButton(
-                    color: Colors.black,
-                    onPressed: () {
-                      if (newPlayer.isEmpty) {
-                        return;
-                      }
-
-                      controller.clear();
-                      setState(
-                        () {
-                          players.add(newPlayer);
-                          newPlayer = '';
-                        },
-                      );
-                    },
-                    child: const Text('Add'),
-                  )
-                ],
-              ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+          Container(
+            constraints: const BoxConstraints(maxHeight: 350, maxWidth: 350),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: inputFocus,
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter a new player name',
+                    ),
+                    onChanged: _onChangedPlayerName,
+                    onSubmitted: _onPressEnter,
+                  ),
+                ),
+                const SizedBox.shrink(),
+                TextButton(
+                  onPressed: _onSubmitPlayerName,
+                  child: const Text('Add'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       persistentFooterButtons: [
         FloatingActionButton(
@@ -83,7 +118,7 @@ class _SetPlayerState extends State<SetPlayer> {
             MaterialPageRoute(
               builder: (context) => Game(
                 selectedParty: null,
-                playersNames: players,
+                playersNames: _players,
               ),
             ),
           ),

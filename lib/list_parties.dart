@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:yaniv_calculator/file_handler.dart';
 import 'package:yaniv_calculator/game.dart';
+import 'package:yaniv_calculator/main.dart';
 import 'package:yaniv_calculator/party.dart';
 
-class ListParties extends StatelessWidget {
-  final List<Party> parties;
+class ListParties extends StatefulWidget {
+  const ListParties({super.key});
 
-  const ListParties({super.key, required this.parties});
+  @override
+  State<ListParties> createState() => _ListPartiesState();
+}
+
+class _ListPartiesState extends State<ListParties> {
+  late List<Party> parties = [];
+
+  _ListPartiesState();
+
+  _setPartiesFromStorage() async {
+    var partiesFromStorage = await FileHandler.instance.readParty();
+
+    setState(() {
+      parties = partiesFromStorage;
+    });
+  }
+
+  _removeParty(Party partyToRemove) {
+    setState(
+      () {
+        parties =
+            List.from(parties.where((party) => party.id != partyToRemove.id));
+      },
+    );
+    FileHandler.instance.deleteParty(partyToRemove);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _setPartiesFromStorage();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,38 +48,56 @@ class ListParties extends StatelessWidget {
           'Yaniv Calculator',
           style: TextStyle(color: Color(0xDDFFFFFF)),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MenuScreen(),
+            ),
+          ),
+        ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(8),
-        children: [
-          ...parties.asMap().entries.map(
-                (entry) => Card(
-                  child: InkWell(
-                    onLongPress: () {
-                      FileHandler.instance.deleteParty(entry.value);
-                    },
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Game(
-                          selectedParty: entry.value,
-                        ),
-                      ),
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(entry.value.creationDate),
-                          const Text(' - '),
-                          Text(entry.value.players.join(', '))
-                        ],
-                      ),
+      body: ListView.builder(
+        itemCount: parties.length,
+        itemBuilder: (context, index) {
+          final party = parties[index];
+          return Dismissible(
+            key: Key(party.id),
+            onDismissed: (DismissDirection direction) {
+              _removeParty(party);
+            },
+            background: Container(color: Colors.red),
+            child: Container(
+              height: 50,
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Color.fromARGB(255, 227, 227, 227)),
+                ),
+              ),
+              child: InkWell(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Game(
+                      selectedParty: party,
                     ),
                   ),
                 ),
-              )
-        ],
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(party.creationDate),
+                      const Text(' - '),
+                      Text(party.players.join(', '))
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

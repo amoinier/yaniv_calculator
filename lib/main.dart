@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yaniv_calculator/file_handler.dart';
@@ -44,51 +43,49 @@ class MenuScreen extends StatelessWidget {
         leading: null,
         automaticallyImplyLeading: false,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              CupertinoButton(
-                color: Colors.black,
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SetPlayer(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SetPlayer(),
+                    ),
                   ),
+                  child: const Text('New Game'),
                 ),
-                child: const Text('New Game'),
-              )
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FutureBuilder<List<Party>>(
-                future: file.readParty(),
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<List<Party>> snapshot,
-                ) {
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FutureBuilder<List<Party>>(
+                  future: file.readParty(),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<List<Party>> snapshot,
+                  ) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
 
-                  return CupertinoButton(
-                    color: Colors.black,
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ListParties(
-                          parties: snapshot.data ?? [],
+                    return ElevatedButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ListParties(),
                         ),
                       ),
-                    ),
-                    child: const Text('Reopen older game'),
-                  );
-                },
-              )
+                      child: const Text('Reopen older game'),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ],

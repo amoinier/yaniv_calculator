@@ -3,18 +3,26 @@ class Party {
   final List<String> players;
   final List<Map<String, List<int>>> rounds;
   final String creationDate;
+  int maxPoints = 200;
+  int asafPoints = 30;
+  int cardsNumber = 5;
 
-  const Party({
+  Party({
     required this.id,
     required this.players,
     required this.rounds,
     required this.creationDate,
+    maxPoints,
+    asafPoints,
   });
 
   Party.fromJSON(Map<String, dynamic> map)
       : id = map['id'].toString(),
         creationDate = map['creationDate'].toString(),
         players = map['players'].cast<String>(),
+        maxPoints = map['maxPoints']?.toInt() ?? 200,
+        asafPoints = map['asafPoints']?.toInt() ?? 30,
+        cardsNumber = map['cardsNumber']?.toInt() ?? 5,
         rounds = List<Map<String, List<int>>>.from(
           map['rounds'].map((e) => {'score': List<int>.from(e['score'])}),
         );
@@ -25,8 +33,12 @@ class Party {
       'players': players,
       'rounds': rounds,
       'creationDate': creationDate,
+      'maxPoints': maxPoints,
+      'asafPoints': asafPoints,
+      'cardsNumber': cardsNumber,
     };
   }
 
-  List<Object> get props => [id, players, rounds, creationDate];
+  List<Object> get props =>
+      [id, players, rounds, creationDate, maxPoints, asafPoints, cardsNumber];
 }

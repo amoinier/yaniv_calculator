@@ -20,23 +20,22 @@ class Game extends StatefulWidget {
   final List<String> playersNames;
 
   @override
-  State<Game> createState() => _GameState(selectedParty, playersNames);
+  State<Game> createState() {
+    return _GameState();
+  }
 }
 
 class _GameState extends State<Game> {
-  final Party? selectedParty;
-  final List<String> playersNames;
+  late Party? selectedParty;
+  late List<String> playersNames;
 
-  _GameState(this.selectedParty, this.playersNames);
+  _GameState();
 
   DateTime startDate = DateTime.now();
   DateTime actualDate = DateTime.now();
   late Party actualParty;
 
   Future<void> _initParty() async {
-    final file = FileHandler.instance;
-    final parties = await file.readParty();
-
     if (selectedParty != null) {
       setState(() {
         actualParty = selectedParty!;
@@ -71,6 +70,8 @@ class _GameState extends State<Game> {
   @override
   void initState() {
     super.initState();
+    selectedParty = widget.selectedParty;
+    playersNames = widget.playersNames;
     actualParty = Party(
       id: uuid.v4(),
       players: playersNames,
