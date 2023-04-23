@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yaniv_calculator/entity.dart';
 import 'package:yaniv_calculator/party.dart';
 import 'package:yaniv_calculator/player.dart';
+import 'package:yaniv_calculator/round.dart';
 
 enum Entities { players, parties }
 
@@ -40,7 +41,15 @@ class FileHandler {
 
     final partyListMap = getSet(key).map((e) => e.toJson()).toList();
 
-    await preference.setString(Entities.parties.name, jsonEncode(partyListMap));
+    await preference.setString(
+      Entities.parties.name,
+      jsonEncode(
+        partyListMap,
+        toEncodable: (Object? value) => value is Round
+            ? Round.toJson(value)
+            : throw UnsupportedError('Cannot convert to JSON: $value'),
+      ),
+    );
   }
 
   Future<List<Entity>> read(Entities entity) async {

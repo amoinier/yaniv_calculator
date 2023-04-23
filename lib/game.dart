@@ -42,27 +42,15 @@ class _GameState extends State<Game> {
     }
   }
 
-  Future<void> _addNewRound() async {
-    var newScore =
+  Future<void> _triggerAddNewRound() async {
+    var newRound =
         await Yaniv.showSimpleModalDialog(context, actualParty.players);
 
-    if (newScore != null) {
+    if (newRound != null) {
       setState(() {
-        actualParty.rounds.add({'score': newScore});
+        actualParty.addNewRound(newRound.score, newRound.asafPlayerId);
       });
-      actualParty.update();
     }
-  }
-
-  List<int> _computeScore(int roundToScore) {
-    List<int> score =
-        List<int>.generate(actualParty.players.length, (index) => 0);
-    for (int i = 0; i < roundToScore; i++) {
-      actualParty.rounds[i]['score']?.asMap().entries.forEach(
-            (value) => {score[value.key] = score[value.key] + value.value},
-          );
-    }
-    return score;
   }
 
   @override
@@ -120,15 +108,16 @@ class _GameState extends State<Game> {
                         (entry) => TableRow(
                           children: [
                             Text((entry.key + 1).toString()),
-                            ...?entry.value['score']
-                                ?.map((score) => Text(score.toString()))
+                            ...entry.value.score
+                                .map((score) => Text(score.toString()))
                           ],
                         ),
                       ),
                   TableRow(
                     children: [
                       const Text('Total'),
-                      ..._computeScore(actualParty.rounds.length)
+                      ...actualParty
+                          .computeScoreFromRound(actualParty.rounds.length)
                           .map((score) => Text(score.toString()))
                     ],
                   ),
@@ -136,7 +125,7 @@ class _GameState extends State<Game> {
               ),
             ),
             floatingActionButton: FloatingActionButton(
-              onPressed: _addNewRound,
+              onPressed: _triggerAddNewRound,
               tooltip: 'Increment',
               child: const Icon(Icons.add),
             ),

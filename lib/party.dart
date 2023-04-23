@@ -1,15 +1,22 @@
 import 'package:yaniv_calculator/entity.dart';
 import 'package:yaniv_calculator/file_handler.dart';
+import 'package:yaniv_calculator/round.dart';
+
+const defaultMaxPoints = 200;
+const defaultAsafPoints = 30;
+const defaultCardNumber = 5;
+const defaultBonusPoints = -50;
 
 class Party implements Entity {
   @override
   final String id;
   final List<String> players;
-  final List<Map<String, List<int>>> rounds;
+  final List<Round> rounds;
   final String creationDate;
-  int maxPoints = 200;
-  int asafPoints = 30;
-  int cardsNumber = 5;
+  int maxPoints = defaultMaxPoints;
+  int asafPoints = defaultAsafPoints;
+  int cardsNumber = defaultCardNumber;
+  int bonusPoints = defaultBonusPoints;
 
   Party({
     required this.id,
@@ -24,11 +31,18 @@ class Party implements Entity {
       : id = map['id'].toString(),
         creationDate = map['creationDate'].toString(),
         players = map['players'].cast<String>(),
-        maxPoints = map['maxPoints']?.toInt() ?? 200,
-        asafPoints = map['asafPoints']?.toInt() ?? 30,
-        cardsNumber = map['cardsNumber']?.toInt() ?? 5,
-        rounds = List<Map<String, List<int>>>.from(
-          map['rounds'].map((e) => {'score': List<int>.from(e['score'])}),
+        maxPoints = map['maxPoints']?.toInt() ?? defaultMaxPoints,
+        asafPoints = map['asafPoints']?.toInt() ?? defaultAsafPoints,
+        cardsNumber = map['cardsNumber']?.toInt() ?? defaultCardNumber,
+        bonusPoints = map['bonusPoints']?.toInt() ?? defaultBonusPoints,
+        rounds = List<Round>.from(
+          map['rounds'].map(
+            (e) => Round(
+              List<int>.from(e['score']),
+              List<int>.from(e['bonus']),
+              e['asafPlayerId'].toString(),
+            ),
+          ),
         );
 
   @override
@@ -44,12 +58,53 @@ class Party implements Entity {
     };
   }
 
+  List<int> computeBonusFromNewScore(List<int> newScore, String? asafPlayerId) {
+    final computedScore = computeScoreFromRound(rounds.length);
+
+    return computedScore.asMap().entries.map((totalByPlayer) {
+      final total = totalByPlayer.value + newScore[totalByPlayer.key];
+
+      final asaf = asafPlayerId == players[totalByPlayer.key] ? asafPoints : 0;
+      final bonus = total % 100 == 0 ? bonusPoints : 0;
+
+      return asaf + bonus;
+    }).toList();
+  }
+
+  void addNewRound(List<int> newScore, String? asafPlayerId) {
+    rounds.add(
+      Round(
+        newScore,
+        computeBonusFromNewScore(newScore, asafPlayerId),
+        asafPlayerId,
+      ),
+    );
+
+    update();
+  }
+
+  List<int> computeScoreFromRound(int roundToScore) {
+    List<int> score = List<int>.generate(players.length, (index) => 0);
+    for (int i = 0; i < roundToScore; i++) {
+      rounds[i].score.asMap().entries.forEach(
+        (value) {
+          final bonus = rounds[i].bonus[value.key] ?? 0;
+
+          score[value.key] = score[value.key] + value.value + bonus;
+        },
+      );
+    }
+    return score;
+  }
+
   Future<void> write() async {
     await FileHandler.instance.write(this);
   }
 
   static Future<List<Party>> read() async {
-    return await FileHandler.instance.read(Entities.parties) as List<Party>;
+    final parties = await FileHandler.instance.read(Entities.parties);
+
+    return parties.isNotEmpty ? parties as List<Party> : List<Party>.empty();
   }
 
   Future<void> update() async {

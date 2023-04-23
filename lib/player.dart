@@ -32,7 +32,9 @@ class Player implements Entity {
   }
 
   static Future<List<Player>> read() async {
-    return await FileHandler.instance.read(Entities.players) as List<Player>;
+    final players = await FileHandler.instance.read(Entities.players);
+
+    return players.isNotEmpty ? players as List<Player> : List<Player>.empty();
   }
 
   Future<void> update() async {
