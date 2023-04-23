@@ -1,4 +1,8 @@
-class Party {
+import 'package:yaniv_calculator/entity.dart';
+import 'package:yaniv_calculator/file_handler.dart';
+
+class Party implements Entity {
+  @override
   final String id;
   final List<String> players;
   final List<Map<String, List<int>>> rounds;
@@ -27,6 +31,7 @@ class Party {
           map['rounds'].map((e) => {'score': List<int>.from(e['score'])}),
         );
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -37,6 +42,22 @@ class Party {
       'asafPoints': asafPoints,
       'cardsNumber': cardsNumber,
     };
+  }
+
+  Future<void> write() async {
+    await FileHandler.instance.write(this);
+  }
+
+  static Future<List<Party>> read() async {
+    return await FileHandler.instance.read(Entities.parties) as List<Party>;
+  }
+
+  Future<void> update() async {
+    await FileHandler.instance.update(id: id, updatedEntity: this);
+  }
+
+  Future<void> delete() async {
+    await FileHandler.instance.delete(this);
   }
 
   List<Object> get props =>

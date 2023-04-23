@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:yaniv_calculator/game.dart';
 
@@ -55,13 +57,34 @@ class _SetPlayerState extends State<SetPlayer> {
                 final player = _players[index];
                 return Dismissible(
                   key: Key(player),
-                  onDismissed: (DismissDirection direction) {
-                    setState(() {
-                      _players.removeWhere(
-                          (playerFromList) => playerFromList == player);
-                    });
+                  onUpdate: (DismissUpdateDetails direction) {
+                    // print(direction.direction);
+                    // print(direction.previousReached);
+                    // print(direction.progress);
+                    // print(direction.reached);
+                    if (direction.progress >= 1) {
+                      Timer(
+                        const Duration(milliseconds: 500),
+                        () => setState(() {
+                          _players.removeWhere(
+                            (playerFromList) => playerFromList == player,
+                          );
+                        }),
+                      );
+                    }
                   },
-                  background: Container(color: Colors.red),
+                  background: Container(
+                    color: Colors.red,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Icon(Icons.delete, color: Colors.white),
+                        )
+                      ],
+                    ),
+                  ),
                   child: Container(
                     height: 50,
                     decoration: const BoxDecoration(

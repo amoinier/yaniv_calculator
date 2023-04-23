@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:yaniv_calculator/file_handler.dart';
 import 'package:yaniv_calculator/list_parties.dart';
 import 'package:yaniv_calculator/party.dart';
 import 'package:yaniv_calculator/set_player.dart';
@@ -22,15 +21,13 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: ThemeData(primaryColor: Colors.white),
       darkTheme: ThemeData.dark(),
-      home: MenuScreen(),
+      home: const MenuScreen(),
     );
   }
 }
 
 class MenuScreen extends StatelessWidget {
-  MenuScreen({super.key});
-
-  final file = FileHandler.instance;
+  const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +62,7 @@ class MenuScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: FutureBuilder<List<Party>>(
-                  future: file.readParty(),
+                  future: Party.read(),
                   builder: (
                     BuildContext context,
                     AsyncSnapshot<List<Party>> snapshot,

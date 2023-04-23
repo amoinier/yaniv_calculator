@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:yaniv_calculator/main.dart';
 import 'package:yaniv_calculator/party.dart';
-import 'package:yaniv_calculator/file_handler.dart';
 import 'package:yaniv_calculator/modal_new_round.dart';
 
 const uuid = Uuid();
@@ -51,8 +50,7 @@ class _GameState extends State<Game> {
       setState(() {
         actualParty.rounds.add({'score': newScore});
       });
-      FileHandler.instance
-          .updateParty(id: actualParty.id, updatedParty: actualParty);
+      actualParty.update();
     }
   }
 
@@ -102,7 +100,7 @@ class _GameState extends State<Game> {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MenuScreen(),
+                    builder: (context) => const MenuScreen(),
                   ),
                 ),
               ),

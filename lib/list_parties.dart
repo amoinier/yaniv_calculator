@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:yaniv_calculator/file_handler.dart';
 import 'package:yaniv_calculator/game.dart';
 import 'package:yaniv_calculator/main.dart';
 import 'package:yaniv_calculator/party.dart';
@@ -17,9 +16,14 @@ class _ListPartiesState extends State<ListParties> {
   _ListPartiesState();
 
   _setPartiesFromStorage() async {
-    var partiesFromStorage = await FileHandler.instance.readParty();
+    var partiesFromStorage = await Party.read();
 
     setState(() {
+      partiesFromStorage.sort(
+        (a, b) => DateTime.parse(a.creationDate)
+            .compareTo(DateTime.parse(b.creationDate)),
+      );
+
       parties = partiesFromStorage;
     });
   }
@@ -31,7 +35,7 @@ class _ListPartiesState extends State<ListParties> {
             List.from(parties.where((party) => party.id != partyToRemove.id));
       },
     );
-    FileHandler.instance.deleteParty(partyToRemove);
+    partyToRemove.delete();
   }
 
   @override
@@ -53,7 +57,7 @@ class _ListPartiesState extends State<ListParties> {
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => MenuScreen(),
+              builder: (context) => const MenuScreen(),
             ),
           ),
         ),

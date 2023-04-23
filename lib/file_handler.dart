@@ -1,7 +1,14 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yaniv_calculator/entity.dart';
 import 'package:yaniv_calculator/party.dart';
+import 'package:yaniv_calculator/player.dart';
+
+enum Entities { players, parties }
+
+String getSetKeyFromEntityType<T extends Entity>(T entity) =>
+    entity is Party ? Entities.parties.name : Entities.players.name;
 
 class FileHandler {
   // Makes this a singleton class, as we want only want a single
@@ -19,47 +26,77 @@ class FileHandler {
   }
 
   static final Set<Party> _partySet = {};
+  static final Set<Player> _playerSet = {};
 
-  Future<void> writeParty(Party party) async {
-    final SharedPreferences preference = await file;
-    _partySet.add(party);
-
-    // Now convert the set to a list as the jsonEncoder cannot encode
-    // a set but a list.
-    final partyListMap = _partySet.map((e) => e.toJson()).toList();
-
-    await preference.setString('parties', jsonEncode(partyListMap));
+  getSet(String key) {
+    return (key == Entities.parties.name ? _partySet : _playerSet);
   }
 
-  Future<List<Party>> readParty() async {
+  Future<void> write<T extends Entity>(T entity) async {
+    final key = getSetKeyFromEntityType(entity);
     final SharedPreferences preference = await file;
-    final content = preference.getString('parties');
+
+    getSet(key).add(entity);
+
+    final partyListMap = getSet(key).map((e) => e.toJson()).toList();
+
+    await preference.setString(Entities.parties.name, jsonEncode(partyListMap));
+  }
+
+  Future<List<Entity>> read(Entities entity) async {
+    final SharedPreferences preference = await file;
+    final content = preference.getString(entity.name);
 
     if (content == null || content.isEmpty) {
       return [];
     }
 
     final List<dynamic> jsonData = jsonDecode(content);
-    final List<Party> parties =
-        jsonData.map((e) => Party.fromJSON(e as Map<String, dynamic>)).toList();
 
-    return parties;
+    if (entity.name == Entities.parties.name) {
+      _partySet.clear();
+      _partySet.addAll(
+        jsonData.map((e) => Party.fromJSON(e as Map<String, dynamic>)).toList(),
+      );
+
+      return jsonData
+          .map((e) => Party.fromJSON(e as Map<String, dynamic>))
+          .toList();
+    }
+
+    if (entity.name == Entities.players.name) {
+      _playerSet.clear();
+      _playerSet.addAll(
+        jsonData
+            .map((e) => Player.fromJSON(e as Map<String, dynamic>))
+            .toList(),
+      );
+
+      return jsonData
+          .map((e) => Party.fromJSON(e as Map<String, dynamic>))
+          .toList();
+    }
+
+    return [];
   }
 
-  Future<void> deleteParty(Party party) async {
+  Future<void> delete<T extends Entity>(T entity) async {
+    final key = getSetKeyFromEntityType(entity);
     final SharedPreferences preference = await file;
 
-    _partySet.removeWhere((e) => e.id == party.id);
-    final partyListMap = _partySet.map((e) => e.toJson()).toList();
+    getSet(key).removeWhere((e) => e.id == entity.id);
+    final entities = getSet(key).map((e) => e.toJson()).toList();
 
-    await preference.setString('parties', jsonEncode(partyListMap));
+    await preference.setString(Entities.parties.name, jsonEncode(entities));
   }
 
-  Future<void> updateParty({
+  Future<void> update<T extends Entity>({
     required String id,
-    required Party updatedParty,
+    required T updatedEntity,
   }) async {
-    _partySet.removeWhere((e) => e.id == updatedParty.id);
-    await writeParty(updatedParty);
+    final key = getSetKeyFromEntityType(updatedEntity);
+
+    getSet(key).removeWhere((e) => e.id == updatedEntity.id);
+    await write(updatedEntity);
   }
 }
