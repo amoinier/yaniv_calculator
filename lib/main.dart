@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:yaniv_calculator/file_handler.dart';
 import 'package:yaniv_calculator/list_parties.dart';
 import 'package:yaniv_calculator/party.dart';
+import 'package:yaniv_calculator/player.dart';
 import 'package:yaniv_calculator/set_player.dart';
 
 var uuid = const Uuid();
@@ -31,6 +33,9 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Party.init();
+    Player.init();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -60,27 +65,25 @@ class MenuScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Party.read().isNotEmpty
+                      ? ElevatedButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ListParties(),
+                            ),
+                          ),
+                          child: const Text(
+                            'Reopen older game',
+                          ),
+                        )
+                      : const SizedBox.shrink()),
+              Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FutureBuilder<List<Party>>(
-                  future: Party.read(),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<List<Party>> snapshot,
-                  ) {
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return ElevatedButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ListParties(),
-                        ),
-                      ),
-                      child: const Text('Reopen older game'),
-                    );
-                  },
+                child: ElevatedButton(
+                  onPressed: () => FileHandler.instance.clearParties(),
+                  child: const Text('Clean old games'),
                 ),
               ),
             ],

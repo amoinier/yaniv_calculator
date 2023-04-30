@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yaniv_calculator/game.dart';
 import 'package:yaniv_calculator/main.dart';
 import 'package:yaniv_calculator/party.dart';
+import 'package:yaniv_calculator/player.dart';
 
 class ListParties extends StatefulWidget {
   const ListParties({super.key});
@@ -94,7 +95,14 @@ class _ListPartiesState extends State<ListParties> {
                     children: [
                       Text(party.creationDate),
                       const Text(' - '),
-                      Text(party.players.join(', '))
+                      Text(
+                        party.players
+                            .map(
+                              (playerId) =>
+                                  Player.findPlayer(playerId)?.name ?? '',
+                            )
+                            .join(', '),
+                      )
                     ],
                   ),
                 ),

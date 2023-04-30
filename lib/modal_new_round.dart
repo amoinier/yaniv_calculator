@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:yaniv_calculator/player.dart';
 import 'package:yaniv_calculator/round.dart';
 
 class Yaniv {
@@ -13,7 +14,7 @@ class Yaniv {
     return showDialog<RoundWithoutBonus>(
       context: context,
       builder: (BuildContext context) {
-        String asafPlayerId = '';
+        String? asafPlayerId;
         return StatefulBuilder(
           builder: (stfContext, stfSetState) {
             return Dialog(
@@ -43,7 +44,10 @@ class Yaniv {
                                 Expanded(
                                   child: TextField(
                                     decoration: InputDecoration(
-                                      label: Text(entry.value),
+                                      label: Text(
+                                        Player.findPlayer(entry.value)?.name ??
+                                            '',
+                                      ),
                                     ),
                                     keyboardType:
                                         const TextInputType.numberWithOptions(
@@ -75,14 +79,15 @@ class Yaniv {
                                     return Colors.orange;
                                   }),
                                   value: asafPlayerId == entry.value,
-                                  onChanged: asafPlayerId.isNotEmpty &&
+                                  onChanged: asafPlayerId != null &&
                                           asafPlayerId != entry.value
                                       ? null
                                       : (bool? value) {
-                                          stfSetState(() {
-                                            asafPlayerId =
-                                                value! ? entry.value : '';
-                                          });
+                                          if (value != null) {
+                                            stfSetState(() {
+                                              asafPlayerId = entry.value;
+                                            });
+                                          }
                                         },
                                 )
                               ],

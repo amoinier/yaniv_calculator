@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:yaniv_calculator/main.dart';
 import 'package:yaniv_calculator/party.dart';
 import 'package:yaniv_calculator/modal_new_round.dart';
+import 'package:yaniv_calculator/player.dart';
 
 const uuid = Uuid();
 
@@ -12,11 +13,11 @@ class Game extends StatefulWidget {
   const Game({
     super.key,
     required this.selectedParty,
-    this.playersNames = const [],
+    this.players = const [],
   });
 
   final Party? selectedParty;
-  final List<String> playersNames;
+  final List<String> players;
 
   @override
   State<Game> createState() {
@@ -26,7 +27,7 @@ class Game extends StatefulWidget {
 
 class _GameState extends State<Game> {
   late Party? selectedParty;
-  late List<String> playersNames;
+  late List<String> players;
 
   _GameState();
 
@@ -57,10 +58,10 @@ class _GameState extends State<Game> {
   void initState() {
     super.initState();
     selectedParty = widget.selectedParty;
-    playersNames = widget.playersNames;
+    players = widget.players;
     actualParty = Party(
       id: uuid.v4(),
-      players: playersNames,
+      players: players,
       rounds: [],
       creationDate: DateTime.now().toString(),
     );
@@ -101,7 +102,11 @@ class _GameState extends State<Game> {
                   TableRow(
                     children: [
                       const Text('Tour'),
-                      ...actualParty.players.map((name) => Text(name))
+                      ...actualParty.players.map(
+                        (playerId) => Text(
+                          Player.findPlayer(playerId)?.name ?? '',
+                        ),
+                      ),
                     ],
                   ),
                   ...actualParty.rounds.asMap().entries.map(

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:yaniv_calculator/game.dart';
+import 'package:yaniv_calculator/player.dart';
 
 class SetPlayer extends StatefulWidget {
   const SetPlayer({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class SetPlayer extends StatefulWidget {
 class _SetPlayerState extends State<SetPlayer> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode inputFocus = FocusNode();
-  final List<String> _players = [];
+  final List<Player> _players = [];
   String _newPlayer = '';
 
   void _onChangedPlayerName(String value) {
@@ -27,10 +28,12 @@ class _SetPlayerState extends State<SetPlayer> {
     if (_newPlayer.isEmpty) {
       return;
     }
+    final newPlayer = Player(name: _newPlayer);
     _controller.clear();
     inputFocus.requestFocus();
+    newPlayer.write();
     setState(() {
-      _players.add(_newPlayer);
+      _players.add(newPlayer);
       _newPlayer = '';
     });
   }
@@ -56,13 +59,14 @@ class _SetPlayerState extends State<SetPlayer> {
               itemBuilder: (context, index) {
                 final player = _players[index];
                 return Dismissible(
-                  key: Key(player),
+                  key: Key(player.id),
                   onUpdate: (DismissUpdateDetails direction) {
                     // print(direction.direction);
                     // print(direction.previousReached);
                     // print(direction.progress);
                     // print(direction.reached);
                     if (direction.progress >= 1) {
+                      player.delete();
                       Timer(
                         const Duration(milliseconds: 500),
                         () => setState(() {
@@ -98,7 +102,7 @@ class _SetPlayerState extends State<SetPlayer> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(player),
+                          Text(player.name),
                         ],
                       ),
                     ),
@@ -141,7 +145,7 @@ class _SetPlayerState extends State<SetPlayer> {
             MaterialPageRoute(
               builder: (context) => Game(
                 selectedParty: null,
-                playersNames: _players,
+                players: _players.map((player) => player.id).toList(),
               ),
             ),
           ),

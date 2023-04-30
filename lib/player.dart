@@ -1,17 +1,22 @@
+import 'package:uuid/uuid.dart';
 import 'package:yaniv_calculator/entity.dart';
 import 'package:yaniv_calculator/file_handler.dart';
 
+const uuid = Uuid();
+
 class Player implements Entity {
   @override
-  final String id;
-  final String name;
-  final String image;
+  late String id;
+  late String name;
+  late String? image;
 
   Player({
-    required this.id,
+    String? id,
     required this.name,
-    required this.image,
-  });
+    this.image,
+  }) {
+    this.id = id ?? uuid.v4();
+  }
 
   Player.fromJSON(Map<String, dynamic> map)
       : id = map['id'].toString(),
@@ -27,14 +32,28 @@ class Player implements Entity {
     };
   }
 
-  Future<void> write() async {
-    await FileHandler.instance.write(this);
+  static void init() {
+    FileHandler.instance.read(Entities.players);
   }
 
-  static Future<List<Player>> read() async {
-    final players = await FileHandler.instance.read(Entities.players);
+  static List<Player> read() {
+    final players = FileHandler.instance.getPlayer();
 
-    return players.isNotEmpty ? players as List<Player> : List<Player>.empty();
+    return players.toList();
+  }
+
+  static Player? findPlayer(String id) {
+    final players = read();
+    final findedPlayer = players.firstWhere(
+      (player) => player.id == id,
+      orElse: () => Player(name: ''),
+    );
+
+    return findedPlayer.name.isNotEmpty ? findedPlayer : null;
+  }
+
+  Future<void> write() async {
+    await FileHandler.instance.write(this);
   }
 
   Future<void> update() async {
@@ -45,5 +64,5 @@ class Player implements Entity {
     await FileHandler.instance.delete(this);
   }
 
-  List<Object> get props => [id, name, image];
+  List<Object> get props => [id, name, image ?? ''];
 }

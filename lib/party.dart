@@ -65,7 +65,7 @@ class Party implements Entity {
       final total = totalByPlayer.value + newScore[totalByPlayer.key];
 
       final asaf = asafPlayerId == players[totalByPlayer.key] ? asafPoints : 0;
-      final bonus = total % 100 == 0 ? bonusPoints : 0;
+      final bonus = total != 0 && total % 100 == 0 ? bonusPoints : 0;
 
       return asaf + bonus;
     }).toList();
@@ -88,7 +88,7 @@ class Party implements Entity {
     for (int i = 0; i < roundToScore; i++) {
       rounds[i].score.asMap().entries.forEach(
         (value) {
-          final bonus = rounds[i].bonus[value.key] ?? 0;
+          final bonus = rounds[i].bonus[value.key];
 
           score[value.key] = score[value.key] + value.value + bonus;
         },
@@ -97,14 +97,18 @@ class Party implements Entity {
     return score;
   }
 
-  Future<void> write() async {
-    await FileHandler.instance.write(this);
+  static void init() {
+    FileHandler.instance.read(Entities.parties);
   }
 
-  static Future<List<Party>> read() async {
-    final parties = await FileHandler.instance.read(Entities.parties);
+  static List<Party> read() {
+    final parties = FileHandler.instance.getParty();
 
-    return parties.isNotEmpty ? parties as List<Party> : List<Party>.empty();
+    return parties.toList();
+  }
+
+  Future<void> write() async {
+    await FileHandler.instance.write(this);
   }
 
   Future<void> update() async {

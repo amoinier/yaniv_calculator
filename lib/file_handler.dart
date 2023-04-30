@@ -23,14 +23,23 @@ class FileHandler {
     if (_sharedPreference != null) return _sharedPreference!;
 
     _sharedPreference = await SharedPreferences.getInstance();
+
     return _sharedPreference!;
   }
 
-  static final Set<Party> _partySet = {};
-  static final Set<Player> _playerSet = {};
+  final Set<Party> _partySet = {};
+  final Set<Player> _playerSet = {};
 
   getSet(String key) {
     return (key == Entities.parties.name ? _partySet : _playerSet);
+  }
+
+  Set<Player> getPlayer() {
+    return _playerSet;
+  }
+
+  Set<Party> getParty() {
+    return _partySet;
   }
 
   Future<void> write<T extends Entity>(T entity) async {
@@ -63,6 +72,10 @@ class FileHandler {
     final List<dynamic> jsonData = jsonDecode(content);
 
     if (entity.name == Entities.parties.name) {
+      print(jsonData
+          .map((e) => Party.fromJSON(e as Map<String, dynamic>))
+          .toList());
+      print('xxxx party');
       _partySet.clear();
       _partySet.addAll(
         jsonData.map((e) => Party.fromJSON(e as Map<String, dynamic>)).toList(),
@@ -74,6 +87,10 @@ class FileHandler {
     }
 
     if (entity.name == Entities.players.name) {
+      print(jsonData
+          .map((e) => Player.fromJSON(e as Map<String, dynamic>))
+          .toList());
+      print('xxxx player');
       _playerSet.clear();
       _playerSet.addAll(
         jsonData
@@ -107,5 +124,9 @@ class FileHandler {
 
     getSet(key).removeWhere((e) => e.id == updatedEntity.id);
     await write(updatedEntity);
+  }
+
+  Future<void> clearParties() async {
+    await _sharedPreference?.remove(Entities.parties.name);
   }
 }
