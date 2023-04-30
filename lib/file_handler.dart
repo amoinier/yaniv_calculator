@@ -33,18 +33,26 @@ class FileHandler {
     return (key == Entities.parties.name ? _partySet : _playerSet);
   }
 
+  static Set<Party> getParty() {
+    return _partySet;
+  }
+
+  static Set<Player> getPlayer() {
+    return _playerSet;
+  }
+
   Future<void> write<T extends Entity>(T entity) async {
     final key = getSetKeyFromEntityType(entity);
     final SharedPreferences preference = await file;
 
     getSet(key).add(entity);
 
-    final partyListMap = getSet(key).map((e) => e.toJson()).toList();
+    final entitiesListMap = getSet(key).map((e) => e.toJson()).toList();
 
     await preference.setString(
-      Entities.parties.name,
+      key,
       jsonEncode(
-        partyListMap,
+        entitiesListMap,
         toEncodable: (Object? value) => value is Round
             ? Round.toJson(value)
             : throw UnsupportedError('Cannot convert to JSON: $value'),
@@ -63,27 +71,29 @@ class FileHandler {
     final List<dynamic> jsonData = jsonDecode(content);
 
     if (entity.name == Entities.parties.name) {
-      _partySet.clear();
-      _partySet.addAll(
-        jsonData.map((e) => Party.fromJSON(e as Map<String, dynamic>)).toList(),
-      );
-
-      return jsonData
+      final partiesList = jsonData
           .map((e) => Party.fromJSON(e as Map<String, dynamic>))
           .toList();
+
+      _partySet.clear();
+      _partySet.addAll(
+        partiesList,
+      );
+
+      return partiesList;
     }
 
     if (entity.name == Entities.players.name) {
+      final playersList = jsonData
+          .map((e) => Player.fromJSON(e as Map<String, dynamic>))
+          .toList();
+
       _playerSet.clear();
       _playerSet.addAll(
-        jsonData
-            .map((e) => Player.fromJSON(e as Map<String, dynamic>))
-            .toList(),
+        playersList,
       );
 
-      return jsonData
-          .map((e) => Party.fromJSON(e as Map<String, dynamic>))
-          .toList();
+      return playersList;
     }
 
     return [];
@@ -96,7 +106,7 @@ class FileHandler {
     getSet(key).removeWhere((e) => e.id == entity.id);
     final entities = getSet(key).map((e) => e.toJson()).toList();
 
-    await preference.setString(Entities.parties.name, jsonEncode(entities));
+    await preference.setString(key, jsonEncode(entities));
   }
 
   Future<void> update<T extends Entity>({
@@ -107,5 +117,10 @@ class FileHandler {
 
     getSet(key).removeWhere((e) => e.id == updatedEntity.id);
     await write(updatedEntity);
+  }
+
+  Future<void> clear() async {
+    await _sharedPreference?.remove(Entities.parties.name);
+    await _sharedPreference?.remove(Entities.players.name);
   }
 }

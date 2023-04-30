@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:yaniv_calculator/main.dart';
 import 'package:yaniv_calculator/party.dart';
 import 'package:yaniv_calculator/modal_new_round.dart';
+import 'package:yaniv_calculator/player.dart';
 
 const uuid = Uuid();
 
@@ -101,7 +102,11 @@ class _GameState extends State<Game> {
                   TableRow(
                     children: [
                       const Text('Tour'),
-                      ...actualParty.players.map((name) => Text(name))
+                      ...actualParty.players.map(
+                        (playerId) => Text(
+                          Player.findPlayer(playerId)?.name ?? '',
+                        ),
+                      ),
                     ],
                   ),
                   ...actualParty.rounds.asMap().entries.map(
