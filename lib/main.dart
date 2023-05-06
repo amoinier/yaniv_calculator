@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import 'package:yaniv_calculator/file_handler.dart';
 import 'package:yaniv_calculator/list_parties.dart';
-import 'package:yaniv_calculator/party.dart';
+import 'package:yaniv_calculator/new_game.dart';
 import 'package:yaniv_calculator/player.dart';
-import 'package:yaniv_calculator/set_player.dart';
+import 'package:yaniv_calculator/rules.dart';
 
 var uuid = const Uuid();
 
@@ -20,83 +19,85 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      themeMode: ThemeMode.system,
-      theme: ThemeData(primaryColor: Colors.white),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color.fromARGB(255, 251, 244, 241),
+      ),
       home: const MenuScreen(),
     );
   }
 }
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
+
+  @override
+  State<MenuScreen> createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  int _selectedIndex = 0;
+
+  _MenuScreenState();
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    Rules(),
+    NewGame(),
+    ListParties(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     Player.readAsync();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Yaniv Calculator',
-          style: TextStyle(color: Color(0xDDFFFFFF)),
-        ),
-        leading: null,
-        automaticallyImplyLeading: false,
-      ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SetPlayer(),
-                    ),
+    return Container(
+      color: const Color.fromARGB(255, 10, 10, 10),
+      child: SafeArea(
+        child: Scaffold(
+          body: _widgetOptions.elementAt(_selectedIndex),
+          bottomNavigationBar: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(48.0),
+              topRight: Radius.circular(48.0),
+            ),
+            child: BottomNavigationBar(
+              onTap: _onItemTapped,
+              backgroundColor: const Color.fromARGB(255, 10, 10, 10),
+              elevation: 0,
+              iconSize: 32,
+              showUnselectedLabels: false,
+              showSelectedLabels: false,
+              selectedItemColor: const Color.fromARGB(255, 251, 244, 241),
+              unselectedItemColor: const Color.fromARGB(155, 251, 244, 241),
+              currentIndex: _selectedIndex,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.gavel,
                   ),
-                  child: const Text('New Game'),
+                  label: "Game's Rules",
                 ),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FutureBuilder<List<Party>>(
-                  future: Party.readAsync(),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<List<Party>> snapshot,
-                  ) {
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return ElevatedButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ListParties(),
-                        ),
-                      ),
-                      child: const Text('Reopen older game'),
-                    );
-                  },
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.add,
+                  ),
+                  label: 'New game',
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: () => FileHandler.instance.clear(),
-                  child: const Text('Clear all data'),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.list_alt,
+                  ),
+                  label: 'Reopen older game',
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

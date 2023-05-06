@@ -81,11 +81,14 @@ class _GameState extends State<Game> {
             appBar: AppBar(
               title: const Text(
                 'Yaniv Calculator',
-                style: TextStyle(color: Color(0xDDFFFFFF)),
+                style: TextStyle(color: Color.fromARGB(255, 251, 244, 241)),
               ),
-              backgroundColor: const Color.fromARGB(149, 241, 10, 10),
+              backgroundColor: const Color.fromARGB(254, 10, 10, 10),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Color.fromARGB(255, 251, 244, 241),
+                ),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(

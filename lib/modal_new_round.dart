@@ -68,7 +68,8 @@ class Yaniv {
                                   ),
                                 ),
                                 Checkbox(
-                                  checkColor: Colors.white,
+                                  checkColor:
+                                      const Color.fromARGB(255, 251, 244, 241),
                                   fillColor:
                                       MaterialStateProperty.resolveWith<Color>(
                                           (Set<MaterialState> states) {
@@ -93,7 +94,7 @@ class Yaniv {
                               ],
                             ),
                           ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

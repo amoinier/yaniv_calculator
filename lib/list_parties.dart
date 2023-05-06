@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:yaniv_calculator/game.dart';
-import 'package:yaniv_calculator/main.dart';
 import 'package:yaniv_calculator/party.dart';
 import 'package:yaniv_calculator/player.dart';
 
@@ -48,21 +47,6 @@ class _ListPartiesState extends State<ListParties> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Yaniv Calculator',
-          style: TextStyle(color: Color(0xDDFFFFFF)),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MenuScreen(),
-            ),
-          ),
-        ),
-      ),
       body: ListView.builder(
         itemCount: parties.length,
         itemBuilder: (context, index) {

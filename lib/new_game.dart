@@ -1,17 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:yaniv_calculator/game.dart';
 import 'package:yaniv_calculator/player.dart';
 
-class SetPlayer extends StatefulWidget {
-  const SetPlayer({Key? key}) : super(key: key);
+import 'game.dart';
+
+class NewGame extends StatefulWidget {
+  const NewGame({Key? key}) : super(key: key);
 
   @override
-  State<SetPlayer> createState() => _SetPlayerState();
+  State<NewGame> createState() => _NewGameState();
 }
 
-class _SetPlayerState extends State<SetPlayer> {
+class _NewGameState extends State<NewGame> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode inputFocus = FocusNode();
   final List<Player> _players = [];
@@ -31,7 +32,6 @@ class _SetPlayerState extends State<SetPlayer> {
     final newPlayer = Player(name: _newPlayer);
     _controller.clear();
     inputFocus.requestFocus();
-    newPlayer.write();
     setState(() {
       _players.add(newPlayer);
       _newPlayer = '';
@@ -45,12 +45,6 @@ class _SetPlayerState extends State<SetPlayer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Yaniv Calculator',
-          style: TextStyle(color: Color(0xDDFFFFFF)),
-        ),
-      ),
       body: Column(
         children: [
           Expanded(
@@ -66,7 +60,6 @@ class _SetPlayerState extends State<SetPlayer> {
                     // print(direction.progress);
                     // print(direction.reached);
                     if (direction.progress >= 1) {
-                      player.delete();
                       Timer(
                         const Duration(milliseconds: 500),
                         () => setState(() {
@@ -84,7 +77,10 @@ class _SetPlayerState extends State<SetPlayer> {
                       children: const [
                         Padding(
                           padding: EdgeInsets.all(12),
-                          child: Icon(Icons.delete, color: Colors.white),
+                          child: Icon(
+                            Icons.delete,
+                            color: Color.fromARGB(255, 251, 244, 241),
+                          ),
                         )
                       ],
                     ),
@@ -118,11 +114,15 @@ class _SetPlayerState extends State<SetPlayer> {
               children: [
                 Expanded(
                   child: TextField(
+                    style: const TextStyle(
+                      decorationColor: Color.fromARGB(255, 10, 10, 10),
+                    ),
                     controller: _controller,
                     focusNode: inputFocus,
                     autofocus: true,
                     decoration: const InputDecoration(
                       hintText: 'Enter a new player name',
+                      focusedBorder: OutlineInputBorder(),
                     ),
                     onChanged: _onChangedPlayerName,
                     onSubmitted: _onPressEnter,
@@ -130,26 +130,90 @@ class _SetPlayerState extends State<SetPlayer> {
                 ),
                 const SizedBox.shrink(),
                 TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color.fromARGB(255, 10, 10, 10),
+                  ),
                   onPressed: _onSubmitPlayerName,
-                  child: const Text('Add'),
+                  child: const Text('Add player'),
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 32,
+            child: ListView.separated(
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
+              itemCount: Player.read()
+                  .where((element) => !_players.contains(element))
+                  .length,
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    side: const BorderSide(
+                      color: Color.fromARGB(255, 10, 10, 10),
+                    ),
+                    foregroundColor: const Color.fromARGB(255, 10, 10, 10),
+                  ),
+                  child: Text(
+                    Player.read()
+                        .where((element) => !_players.contains(element))
+                        .toList()[index]
+                        .name,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _players.add(
+                        Player.read()
+                            .where(
+                              (element) => !_players.contains(element),
+                            )
+                            .toList()[index],
+                      );
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
         ],
       ),
       persistentFooterButtons: [
         FloatingActionButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Game(
-                selectedParty: null,
-                playersNames: _players.map((player) => player.id).toList(),
-              ),
-            ),
+          heroTag: 'test',
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
           ),
-          backgroundColor: Colors.pink,
+          onPressed: _players.length > 1
+              ? () {
+                  for (var player in _players
+                      .where((element) => !Player.read().contains(element))) {
+                    player.write();
+                  }
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Game(
+                        selectedParty: null,
+                        playersNames:
+                            _players.map((player) => player.id).toList(),
+                      ),
+                    ),
+                  );
+                }
+              : null,
+          backgroundColor: _players.length > 1
+              ? const Color.fromARGB(255, 10, 10, 10)
+              : const Color.fromARGB(150, 10, 10, 10),
           child: const Text('Start'),
         )
       ],
