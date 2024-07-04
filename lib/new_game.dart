@@ -211,6 +211,7 @@ class _NewGameState extends State<NewGame> {
                   );
                 }
               : null,
+          foregroundColor: Colors.white,
           backgroundColor: _players.length > 1
               ? const Color.fromARGB(255, 10, 10, 10)
               : const Color.fromARGB(150, 10, 10, 10),
