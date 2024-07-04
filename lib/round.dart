@@ -15,6 +15,6 @@ class Round {
   static Map<String, dynamic> toJson(Round value) => {
         'score': value.score,
         'bonus': value.bonus,
-        'asafPlayerId': value.asafPlayerId
+        'asafPlayerId': value.asafPlayerId,
       };
 }

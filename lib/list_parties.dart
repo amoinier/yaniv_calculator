@@ -86,7 +86,7 @@ class _ListPartiesState extends State<ListParties> {
                                   Player.findPlayer(playerId)?.name ?? '',
                             )
                             .join(', '),
-                      )
+                      ),
                     ],
                   ),
                 ),

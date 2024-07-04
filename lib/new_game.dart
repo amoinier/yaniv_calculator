@@ -6,7 +6,7 @@ import 'package:yaniv_calculator/player.dart';
 import 'game.dart';
 
 class NewGame extends StatefulWidget {
-  const NewGame({Key? key}) : super(key: key);
+  const NewGame({super.key});
 
   @override
   State<NewGame> createState() => _NewGameState();

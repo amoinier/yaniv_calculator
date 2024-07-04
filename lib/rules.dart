@@ -18,7 +18,7 @@ class Rules extends StatelessWidget {
     '2. Place the remaining cards face-down in the center of the table as the draw pile.',
     '3. Turn the top card of the draw pile face-up to create the discard pile.',
     '',
-    'Gameplay:',
+    'GamePlay:',
     '',
     "1. Starting with the player to the dealer's left and proceeding clockwise, each player takes a turn consisting of the following actions:",
     '  a. Draw: A player must either draw the top card from the draw pile or pick up the top card from the discard pile.',
@@ -47,9 +47,7 @@ class Rules extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ..._rules
-                .map((ruleText) => Flexible(child: Text(ruleText)))
-                .toList(),
+            ..._rules.map((ruleText) => Flexible(child: Text(ruleText))),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => FileHandler.instance.clear(),

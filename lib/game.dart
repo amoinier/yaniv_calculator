@@ -117,7 +117,7 @@ class _GameState extends State<Game> {
                           children: [
                             Text((entry.key + 1).toString()),
                             ...entry.value.score
-                                .map((score) => Text(score.toString()))
+                                .map((score) => Text(score.toString())),
                           ],
                         ),
                       ),
@@ -126,7 +126,7 @@ class _GameState extends State<Game> {
                       const Text('Total'),
                       ...actualParty
                           .computeScoreFromRound(actualParty.rounds.length)
-                          .map((score) => Text(score.toString()))
+                          .map((score) => Text(score.toString())),
                     ],
                   ),
                 ],
