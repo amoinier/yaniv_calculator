@@ -106,7 +106,15 @@ class FileHandler {
     getSet(key).removeWhere((e) => e.id == entity.id);
     final entities = getSet(key).map((e) => e.toJson()).toList();
 
-    await preference.setString(key, jsonEncode(entities));
+    await preference.setString(
+      key,
+      jsonEncode(
+        entities,
+        toEncodable: (Object? value) => value is Round
+            ? Round.toJson(value)
+            : throw UnsupportedError('Cannot convert to JSON: $value'),
+      ),
+    );
   }
 
   Future<void> update<T extends Entity>({
