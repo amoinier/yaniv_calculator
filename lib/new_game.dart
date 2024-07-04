@@ -72,16 +72,16 @@ class _NewGameState extends State<NewGame> {
                   },
                   background: Container(
                     color: Colors.red,
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: const [
+                      children: [
                         Padding(
                           padding: EdgeInsets.all(12),
                           child: Icon(
                             Icons.delete,
                             color: Color.fromARGB(255, 251, 244, 241),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -215,7 +215,7 @@ class _NewGameState extends State<NewGame> {
               ? const Color.fromARGB(255, 10, 10, 10)
               : const Color.fromARGB(150, 10, 10, 10),
           child: const Text('Start'),
-        )
+        ),
       ],
     );
   }

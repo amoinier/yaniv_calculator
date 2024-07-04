@@ -23,8 +23,7 @@ class Yaniv {
                     const BoxConstraints(maxHeight: 350, maxWidth: 350),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: ListView(
                     children: [
                       RichText(
                         textAlign: TextAlign.justify,
@@ -90,7 +89,7 @@ class Yaniv {
                                             });
                                           }
                                         },
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -105,9 +104,9 @@ class Yaniv {
                               RoundWithoutBonus(newScore, asafPlayerId),
                             ),
                             child: const Text('Submit'),
-                          )
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
