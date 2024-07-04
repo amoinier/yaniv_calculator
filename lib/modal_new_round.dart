@@ -20,22 +20,39 @@ class Yaniv {
             return Dialog(
               child: Container(
                 constraints:
-                    const BoxConstraints(maxHeight: 350, maxWidth: 350),
+                    const BoxConstraints(maxHeight: 350, maxWidth: 400),
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: ListView(
                     children: [
-                      RichText(
-                        textAlign: TextAlign.justify,
-                        text: const TextSpan(
-                          text: 'Enter a new round',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: Colors.black,
-                            wordSpacing: 1,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RichText(
+                            textAlign: TextAlign.justify,
+                            text: const TextSpan(
+                              text: 'Enter a new round',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: Colors.black,
+                                wordSpacing: 1,
+                              ),
+                            ),
                           ),
-                        ),
+                          RichText(
+                            textAlign: TextAlign.justify,
+                            text: const TextSpan(
+                              text: 'Asaf?',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14,
+                                color: Colors.black,
+                                wordSpacing: 1,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       ...players.asMap().entries.map(
                             (entry) => Row(
@@ -79,16 +96,17 @@ class Yaniv {
                                     return Colors.orange;
                                   }),
                                   value: asafPlayerId == entry.value,
-                                  onChanged: asafPlayerId != null &&
-                                          asafPlayerId != entry.value
-                                      ? null
-                                      : (bool? value) {
-                                          if (value != null) {
-                                            stfSetState(() {
-                                              asafPlayerId = entry.value;
-                                            });
-                                          }
-                                        },
+                                  onChanged: (bool? value) {
+                                    if (value != null) {
+                                      stfSetState(() {
+                                        if (asafPlayerId == entry.value) {
+                                          asafPlayerId = null;
+                                        } else {
+                                          asafPlayerId = entry.value;
+                                        }
+                                      });
+                                    }
+                                  },
                                 ),
                               ],
                             ),
